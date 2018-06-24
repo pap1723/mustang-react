@@ -85,7 +85,6 @@ class AddContact extends Component {
               <button>Add Contact</button>
             </li>
           </ul>
-          <hr />
         </form>
       </div>
     );

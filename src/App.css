@@ -21,8 +21,21 @@ h1 {
   font-size: large;
 }
 
+.container {
+  width: 60%;
+  height: 500px;
+  background: aqua;
+  margin: auto;
+  padding: 10px;
+}
+
 .add-new {
-  display: inline-block;
+  width: 50%;
+  float: left;
+}
+
+.search {
+  margin-left: 50%;
 }
 
 .add-form {
@@ -115,6 +128,9 @@ h1 {
 
 .contact-list {
   display: block;
+  text-align: center;
+  margin: auto;
+  width: 80%;
 }
 
 .table {

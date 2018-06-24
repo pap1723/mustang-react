@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import './App.css';
 import ContactPerson from './ContactPerson.js';
 import AddContact from './AddContact.js';
-//import Search from './Search.js';
+import Suggestions from './Suggestions.js';
 
 class App extends Component {
   constructor(props) {
@@ -11,13 +11,15 @@ class App extends Component {
     this.state = {
       contacts: [],
       currentContact: 0,
-      //query: ''
+      query: '',
+      results: []
     };
 
     this.onDelete = this.onDelete.bind(this);
     this.onAdd = this.onAdd.bind(this);
     this.onEditSubmit = this.onEditSubmit.bind(this);
     this.onSort = this.onSort.bind(this);
+    this.onSearch = this.onSearch.bind(this);
   }
 
   componentWillMount() {
@@ -152,13 +154,48 @@ class App extends Component {
     this.setState({ contacts });
   }
 
+  handleInputChange = () => {
+    this.setState({
+      query: this.search.value.toLowerCase()
+    }, () => {
+      if (this.state.query && this.state.query.length > 0) {
+        this.onSearch()
+      } else if (!this.state.query) {
+        this.setState({results: []});
+      }
+    });
+  }
+
+  onSearch() {
+    const contacts = this.getContacts();
+    
+    const searchResults = contacts.filter(contact => {
+      return (
+        contact.preferredName.toLowerCase().indexOf(this.state.query) >= 0
+      )
+    });
+
+    this.setState({results: searchResults});
+
+  }
+
   render(){
       return(
         <div className="App">
           <h1>Mustang React Contact Manager</h1>
-            <AddContact
-              onAdd = {this.onAdd}
-            />
+            <div className="container">
+              <AddContact
+                onAdd = {this.onAdd}
+              />
+              <div className="search">
+                <form>
+                <input placeholder="Search for..." ref={input => this.search = input} onChange={this.handleInputChange} />
+                <p>{this.state.query}</p>
+                <Suggestions results={this.state.results} />
+                </form>
+              </div>
+            </div>
+            <hr />
             <div className="contact-list">
               <div className="table">
                 <div className="thead">
