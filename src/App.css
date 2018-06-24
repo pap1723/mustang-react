@@ -6,6 +6,10 @@ h1 {
   text-align: center;
 }
 
+h2 {
+  margin: 5px 0 0 20px;
+}
+
 .App-header {
   background-color: #222;
   height: 150px;
@@ -23,8 +27,7 @@ h1 {
 
 .container {
   width: 60%;
-  height: 500px;
-  background: aqua;
+  height: 450px;
   margin: auto;
   padding: 10px;
 }
@@ -38,18 +41,42 @@ h1 {
   margin-left: 50%;
 }
 
+.search input {
+  box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  border:1px solid #BEBEBE;
+  padding: 7px;
+  margin: 20px 0 0 30px;
+  -webkit-transition: all 0.30s ease-in-out;
+  -moz-transition: all 0.30s ease-in-out;
+  -ms-transition: all 0.30s ease-in-out;
+  -o-transition: all 0.30s ease-in-out;
+  outline: none;
+}
+
+.search input:focus {
+  -moz-box-shadow: 0 0 8px #88D5E9;
+  -webkit-box-shadow: 0 0 8px #88D5E9;
+  box-shadow: 0 0 8px #88D5E9;
+  border: 1px solid #88D5E9;
+}
+
 .add-form {
   margin:0px auto;
-  max-width: 400px;
+  margin-left: 10px;
   padding: 20px 12px 10px 20px;
   font: 13px "Lucida Sans Unicode", "Lucida Grande", sans-serif;
 }
 
-.add-new h2 {
-  margin: 5px 0 0 20px;
+.add-form li {
+  padding: 0;
+  display: block;
+  list-style: none;
+  margin: 10px 0 0 0;
 }
 
-.add-form li {
+.search li {
   padding: 0;
   display: block;
   list-style: none;
@@ -179,4 +206,17 @@ h1 {
   -moz-box-shadow:none;
   -webkit-box-shadow:none;
   cursor: pointer;
+}
+
+.suggest {
+  height: 350px;
+  overflow: scroll;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.instructions {
+  font-size: 16px;
+  font-weight: bold;
+  text-align: center;
 }

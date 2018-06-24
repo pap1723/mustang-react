@@ -35,32 +35,45 @@ class ContactPerson extends Component {
 
   onBlur() {
     let zipCode = this.zipInput.value;
-    fetch('https://dan-nodejs.azurewebsites.net', {
-      method: "post",
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        zip: zipCode
+    let isValidZip = /^\b\d{5}(-\d{4})?\b$/.test(zipCode);
+    if (!isValidZip) {
+      alert('The zip is invalid, please re-enter');
+    } else {
+      fetch('https://dan-nodejs.azurewebsites.net', {
+        method: "post",
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          zip: zipCode
+        })
       })
-    })
-    .then((res) => res.json())
-    .then((res) => {
-      if (!this.cityInput.value) {
-        this.cityInput.value = res.city;
-      }
-      if (!this.stateInput.value) {
-        this.stateInput.value = res.state;
-      }
-      if (!this.latInput.value) {
-        this.latInput.value = res.lat.toString();
-      }
-      if (!this.lngInput.value) {
-        this.lngInput.value = res.lng.toString();
-      }
-      console.log(res)
-    })
+      .then((res) => res.json())
+      .then((res) => {
+        if (!this.cityInput.value) {
+          this.cityInput.value = res.city;
+        } else if (this.cityInput.value && this.cityInput.value !== res.city) {
+          if (window.confirm("The city does not match the zip you entered, would you like to update it?")) {
+            this.cityInput.value = res.city;
+          } else { }
+        }
+        if (!this.stateInput.value) {
+          this.stateInput.value = res.state;
+        } else if (this.stateInput.value && this.stateInput.value !== res.state) {
+          if (window.confirm("The state does not match the zip you entered, would you like to update it?")) {
+            this.stateInput.value = res.state;
+          } else { }
+        }
+        if (!this.latInput.value) {
+          this.latInput.value = res.lat.toString();
+        }
+        if (!this.lngInput.value) {
+          this.lngInput.value = res.lng.toString();
+        }
+        console.log(res)
+      })
+    }
   }
 
   render() {

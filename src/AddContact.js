@@ -4,6 +4,7 @@ import './App.css';
 class AddContact extends Component {
   constructor(props) {
     super(props);
+
     this.onSubmit = this.onSubmit.bind(this);
     this.onBlur = this.onBlur.bind(this);
   }
@@ -28,39 +29,45 @@ class AddContact extends Component {
 
   onBlur() {
     let zipCode = this.zipInput.value;
-    fetch('https://dan-nodejs.azurewebsites.net', {
-      method: "post",
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        zip: zipCode
+    let isValidZip = /^\b\d{5}(-\d{4})?\b$/.test(zipCode);
+    if (!isValidZip) {
+      alert('The zip is invalid, please re-enter');
+    } else {
+      fetch('https://dan-nodejs.azurewebsites.net', {
+        method: "post",
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          zip: zipCode
+        })
       })
-    })
-    .then((res) => res.json())
-    .then((res) => {
-      if (!this.cityInput.value) {
-        this.cityInput.value = res.city;
-      }
-      if (!this.stateInput.value) {
-        this.stateInput.value = res.state;
-      }
-      if (!this.latInput.value) {
-        this.latInput.value = res.lat.toString();
-      }
-      if (!this.lngInput.value) {
-        this.lngInput.value = res.lng.toString();
-      }
-      console.log(res)
-    })
+      .then((res) => res.json())
+      .then((res) => {
+        if (!this.cityInput.value) {
+          this.cityInput.value = res.city;
+        }
+        if (!this.stateInput.value) {
+          this.stateInput.value = res.state;
+        }
+        if (!this.latInput.value) {
+          this.latInput.value = res.lat.toString();
+        }
+        if (!this.lngInput.value) {
+          this.lngInput.value = res.lng.toString();
+        }
+        console.log(res)
+      })
+    }
   }
 
   render() {
     return (
       <div className="add-new">
+        <h2>Add New Contact</h2>
         <form className="add-contact" onSubmit = {this.onSubmit}>
-          <h2>Add New Contact</h2>
+          
           <ul className="add-form">
             <li><label>Full Name <span className="required">*</span></label>
               <input className="names" placeholder="First" ref={firstNameInput => this.firstNameInput = firstNameInput}/>

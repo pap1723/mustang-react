@@ -12,7 +12,7 @@ class App extends Component {
       contacts: [],
       currentContact: 0,
       query: '',
-      results: []
+      results: [],
     };
 
     this.onDelete = this.onDelete.bind(this);
@@ -189,14 +189,17 @@ class App extends Component {
                 onAdd = {this.onAdd}
               />
               <div className="search">
+              <h2>Search Contacts</h2>
                 <form>
                 <input placeholder="Search for..." ref={input => this.search = input} onChange={this.handleInputChange} />
-                <p>{this.state.query}</p>
-                <Suggestions results={this.state.results} />
+                <div className="suggest">
+                  <Suggestions results={this.state.results} />
+                </div>
                 </form>
               </div>
             </div>
             <hr />
+            <p className="instructions">By clicking on any of the headers in the table, you can sort the information in descending order.</p>
             <div className="contact-list">
               <div className="table">
                 <div className="thead">
