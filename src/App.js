@@ -170,8 +170,9 @@ class App extends Component {
     const contacts = this.getContacts();
     
     const searchResults = contacts.filter(contact => {
-      return (
-        contact.preferredName.toLowerCase().indexOf(this.state.query) >= 0
+      const nameConcat = contact.firstName + contact.lastName + contact.preferredName
+      return (  
+        nameConcat.toLowerCase().indexOf(this.state.query) >= 0
       )
     });
 
