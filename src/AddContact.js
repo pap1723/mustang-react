@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import './App.css';
 
+// Component that allows the user to add a new contact person to the local storage
 class AddContact extends Component {
   constructor(props) {
     super(props);
@@ -9,6 +10,7 @@ class AddContact extends Component {
     this.onBlur = this.onBlur.bind(this);
   }
 
+  // Function that adds the new contact to storage. Passes the data to the main function to process and clears the inputs
   onSubmit(event) {
     event.preventDefault();
 
@@ -27,6 +29,11 @@ class AddContact extends Component {
     this.favoriteHobbyInput.value = '';
   }
 
+  /*  When the user leaves the zip code field, this function will be called. This function first checks to see if the Zip Code is valid and
+      then it sends a fetch request to the Node.JS server. The Node server executes a function that looks up the zip code in a JSON database of
+      zip codes and then returns the City, State, Lat and Long data. If the City, State, Lat and Lng fields are empty, they will be auto-populated
+      with the data returned from the server.
+  */
   onBlur() {
     let zipCode = this.zipInput.value;
     let isValidZip = /^\b\d{5}(-\d{4})?\b$/.test(zipCode);
@@ -62,6 +69,7 @@ class AddContact extends Component {
     }
   }
 
+  // Creates the HTML for the form that is filled out by the users to add a new contact
   render() {
     return (
       <div className="add-new">

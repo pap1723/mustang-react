@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import './App.css';
 
+// Component that process all of the individual Contacts data
 class ContactPerson extends Component {
   constructor(props) {
     super(props);
@@ -16,15 +17,18 @@ class ContactPerson extends Component {
     this.onBlur = this.onBlur.bind(this);
   }
 
+  // When the delete button is pressed, pass the name of the contact being deleted to the main function
   onDelete() {
     const { onDelete, firstName, lastName } = this.props;
     onDelete(firstName, lastName);
   }
 
+  // When the user clicks the edit button, change the state that sets the format and allows for editing the data
   onEdit() {
     this.setState({ isEdit: true });
   }
 
+  // When the user's edits are submitted, pass the information to the main app to save the edit and set the state back to regular
   onEditSubmit(event) {
     event.preventDefault();
 
@@ -33,6 +37,12 @@ class ContactPerson extends Component {
     this.setState ({ isEdit: false });
   }
 
+  /*  When the user leaves the zip code field, this function will be called. This function first checks to see if the Zip Code is valid and
+      then it sends a fetch request to the Node.JS server. The Node server executes a function that looks up the zip code in a JSON database of
+      zip codes and then returns the City, State, Lat and Long data. If the City, State, Lat and Lng fields are empty, they will be auto-populated
+      with the data returned from the server. If the City or State fields are not empty, and they do not match the new data returned by the 
+      program, the user is prompted to see if they would like to overwrite the existing data.
+  */
   onBlur() {
     let zipCode = this.zipInput.value;
     let isValidZip = /^\b\d{5}(-\d{4})?\b$/.test(zipCode);
@@ -76,6 +86,10 @@ class ContactPerson extends Component {
     }
   }
 
+  /*  This renders the HTML of the individual contacts. Through some of the CSS 3 new formats, we can set classes to look and act like tables.
+      I couldn't use tables here because forms cannot be split up inside of a table, but the individual parts of the form can be inside divs
+      that can then be set to act like tables.
+  */
   render() {
     const { firstName, lastName, preferredName, email, phoneNumber, city, state, zip, lat, lng, favoriteHobby } = this.props;
     let theReturn;

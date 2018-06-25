@@ -4,13 +4,13 @@ import ContactPerson from './ContactPerson.js';
 import AddContact from './AddContact.js';
 import Suggestions from './Suggestions.js';
 
+// Main part of the React app that runs the rest of the code
 class App extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
       contacts: [],
-      currentContact: 0,
       query: '',
       results: [],
     };
@@ -22,11 +22,13 @@ class App extends Component {
     this.onSearch = this.onSearch.bind(this);
   }
 
+  // Return the initial set of contacts (will be empty)
   componentWillMount() {
     const contacts = this.getContacts();
     this.setState({contacts});
   }
 
+  // Fetch the index of contact URL's and then for each URL get the JSON for each
   componentDidMount() {
     const contacts = this.getContacts();
     fetch('https://mustang-index.azurewebsites.net/index.json')
@@ -44,13 +46,17 @@ class App extends Component {
     });
     
     console.log(contacts);
+    
+    // Set the state of the contact array to store locally
     this.setState({ contacts: JSON.parse(localStorage.getItem('contacts')) });
   }
 
+  // Function to get the current contact list
   getContacts() {
     return this.state.contacts;
   }
 
+  // Add a new contact and push it to the contacts array
   onAdd(firstName, lastName, preferredName, email, phoneNumber, city, state, zip, lat, lng, favoriteHobby) {
     const contacts = this.getContacts();
 
@@ -71,6 +77,7 @@ class App extends Component {
     this.setState({ contacts });
   }
 
+  // When a contact is deleted, remove them from the array of contacts
   onDelete(firstName, lastName) {
     const contacts = this.getContacts();
 
@@ -81,6 +88,9 @@ class App extends Component {
     this.setState({contacts: filteredContacts});
   }
 
+  /*  Some of the formatted JSON files are missing information and it creates null data. When trying to sort, there are errors
+      and this eliminates all null data by creating an empty string instead.
+  */
   checkNull() {
     let contacts = this.getContacts();
 
@@ -124,6 +134,7 @@ class App extends Component {
     this.setState({ contacts });
   }
 
+  // When a contact is edited, this function saves the information to the array
   onEditSubmit(firstName, lastName, preferredName, email, phoneNumber, city, state, zip, lat, lng, favoriteHobby, originalName) {
     let contacts = this.getContacts();
 
@@ -147,6 +158,7 @@ class App extends Component {
     this.setState({ contacts });
   }
 
+  // Sorts the data by the column that is clicked on by the user (calls the checkNull() function to avoid any errors)
   onSort(event, sortKey) {
     const contacts = this.getContacts();
     this.checkNull();
@@ -154,6 +166,7 @@ class App extends Component {
     this.setState({ contacts });
   }
 
+  // Used by the Search function. This returns the search term that is being typed
   handleInputChange = () => {
     this.setState({
       query: this.search.value.toLowerCase()
@@ -166,6 +179,7 @@ class App extends Component {
     });
   }
 
+  // Allows the serach to show contacts in real time if they match any of the names to the search term
   onSearch() {
     const contacts = this.getContacts();
     
@@ -180,6 +194,9 @@ class App extends Component {
 
   }
 
+  /*  Function required by all React components that renders the actual data into usable HTML code. The data looks
+      like HTML in places, but it has different syntax for some values and elements.
+  */
   render(){
       return(
         <div className="App">
