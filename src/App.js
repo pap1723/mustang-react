@@ -60,6 +60,7 @@ class App extends Component {
   onAdd(firstName, lastName, preferredName, email, phoneNumber, city, state, zip, lat, lng, favoriteHobby) {
     const contacts = this.getContacts();
 
+    /*
     contacts.push({
       firstName,
       lastName,
@@ -73,6 +74,7 @@ class App extends Component {
       lng,
       favoriteHobby
     })
+    */
 
     this.setState({ contacts });
   }

@@ -15,6 +15,28 @@ class AddContact extends Component {
     event.preventDefault();
 
     this.props.onAdd(this.firstNameInput.value, this.lastNameInput.value, this.preferredNameInput.value, this.emailInput.value, this.phoneNumberInput.value, this.cityInput.value, this.stateInput.value, this.zipInput.value, this.latInput.value, this.lngInput.value, this.favoriteHobbyInput.value, this.props.firstName + this.props.lastName);
+    
+    fetch('https://dan-nodejs.azurewebsites.net', {
+      method: "post",
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        firstName: this.firstNameInput.value,
+        lastName: this.lastNameInput.value,
+        preferredName: this.preferredNameInput.value,
+        email: this.emailInput.value,
+        phoneNumber: this.phoneNumberInput.value,
+        city: this.cityInput.value,
+        state: this.stateInput.value,
+        zip: this.zipInput.value,
+        lat: this.latInput.value,
+        lng: this.lngInput.value,
+        favoriteHobby: this.favoriteHobbyInput.value
+      })
+    })
+    .then((res) => console.log(res))
 
     this.firstNameInput.value = '';
     this.lastNameInput.value = '';
@@ -26,7 +48,7 @@ class AddContact extends Component {
     this.zipInput.value = '';
     this.latInput.value = '';
     this.lngInput.value = '';
-    this.favoriteHobbyInput.value = '';
+    this.favoriteHobbyInput.value = '';    
   }
 
   /*  When the user leaves the zip code field, this function will be called. This function first checks to see if the Zip Code is valid and
@@ -40,7 +62,7 @@ class AddContact extends Component {
     if (!isValidZip) {
       alert('The zip is invalid, please re-enter');
     } else {
-      fetch('https://dan-nodejs.azurewebsites.net', {
+      fetch('https://dan-nodejs.azurewebsites.net/zip', {
         method: "post",
         headers: {
           'Accept': 'application/json',
