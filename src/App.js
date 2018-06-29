@@ -20,71 +20,110 @@ class App extends Component {
     this.onEditSubmit = this.onEditSubmit.bind(this);
     this.onSort = this.onSort.bind(this);
     this.onSearch = this.onSearch.bind(this);
+    this.initialLoad = this.initialLoad.bind(this);
   }
 
   // Return the initial set of contacts (will be empty)
   componentWillMount() {
-    const contacts = this.getContacts();
-    this.setState({contacts});
+    //let contacts = [];
+    //this.setState({contacts});
   }
 
   // Fetch the index of contact URL's and then for each URL get the JSON for each
-  componentDidMount() {
-    const contacts = this.getContacts();
-    fetch('https://mustang-index.azurewebsites.net/index.json')
-    .then((results) => results.json())
-    .then((data) => {
-      for (let i=0; i < data.length; i++) {
-        fetch(data[i].ContactURL)
+  async componentDidMount() {
+    const contacts = this.pullContacts();
+    await this.pullContacts();
+  }
+
+  // Function to get the contacts from the database
+  pullContacts() {
+    fetch('https://dan-nodejs.azurewebsites.net/select')
+      .then(res => res.json())
+      .then(res => {
+        let contacts = []
+        for (let i = 0; i < res.length; i++) {
+          contacts.push(res[i])
+        }
+        console.log(contacts)
+        this.getContacts();
+        this.setState({ contacts })
+      })
+  }
+
+  // Function to set the state to update the render
+  getContacts() {
+    return this.state.contacts
+  }
+
+  // This function will erase the current database and will load the original content from the Index files
+  initialLoad() {
+    // Do not delete the data without confirming with the user first
+    if (window.confirm("This will erase all current data from the table and reload the starting data. Do you wish to proceed?")) {
+      fetch('https://dan-nodejs.azurewebsites.net/erase')
+      .then((res) => res.text())
+      .then((res) => console.log(res));
+    
+      document.body.classList.add("busy-cursor");
+      fetch('https://mustang-index.azurewebsites.net/index.json')
+        .then(results => results.json())
+        .then(data => Promise.all(data.map(datum => fetch(datum.ContactURL)
           .then((res) => res.json())
           .then((contactList) => {
-            contacts.push(contactList)
-            console.log(contactList);
-            localStorage.setItem('contacts', JSON.stringify(contacts));
+            return fetch('https://dan-nodejs.azurewebsites.net', {
+              method: "post",
+              headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({
+                firstName: contactList.firstName,
+                lastName: contactList.lastName,
+                preferredName: contactList.preferredName,
+                email: contactList.email,
+                phoneNumber: contactList.phoneNumber,
+                city: contactList.city,
+                state: contactList.state,
+                zip: contactList.zip,
+                lat: contactList.lat,
+                lng: contactList.lng,
+                favoriteHobby: contactList.favoriteHobby
+              })
+            })
           })
-      }
-    });
-    
-    console.log(contacts);
-    
-    // Set the state of the contact array to store locally
-    this.setState({ contacts: JSON.parse(localStorage.getItem('contacts')) });
+        )))
+        .then(contacts => {
+          this.pullContacts();
+          document.body.classList.remove("busy-cursor");
+        });
+    } else { }
   }
 
-  // Function to get the current contact list
-  getContacts() {
-    return this.state.contacts;
+  // Add a new contact and push it to the contacts array.
+  // The async and await forces the fetch to finish before the program will continue
+  async onAdd() {
+    const contacts = this.pullContacts();
+    await this.pullContacts(); 
   }
 
-  // Add a new contact and push it to the contacts array
-  onAdd(firstName, lastName, preferredName, email, phoneNumber, city, state, zip, lat, lng, favoriteHobby) {
+  // When a contact is deleted, remove them from the array of contacts and the database
+  onDelete(firstName, lastName, id) {
     const contacts = this.getContacts();
 
-    /*
-    contacts.push({
-      firstName,
-      lastName,
-      preferredName,
-      email,
-      phoneNumber,
-      city,
-      state,
-      zip,
-      lat,
-      lng,
-      favoriteHobby
+    fetch('https://dan-nodejs.azurewebsites.net/delete', {
+      method: "post",
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        id: id
+      })
     })
-    */
-
-    this.setState({ contacts });
-  }
-
-  // When a contact is deleted, remove them from the array of contacts
-  onDelete(firstName, lastName) {
-    const contacts = this.getContacts();
+    .then((res) => res.text())
+    .then((res) => console.log(res));
 
     const filteredContacts = contacts.filter(contact => {
-      return contact.firstName + contact.lastName !== firstName + lastName;
+      return contact.id !== id;
     });
 
     this.setState({contacts: filteredContacts});
@@ -137,29 +176,11 @@ class App extends Component {
   }
 
   // When a contact is edited, this function saves the information to the array
-  onEditSubmit(firstName, lastName, preferredName, email, phoneNumber, city, state, zip, lat, lng, favoriteHobby, originalName) {
-    let contacts = this.getContacts();
-
-    contacts = contacts.map(contact => {
-      if (contact.firstName + contact.lastName === originalName) {
-        contact.firstName = firstName;
-        contact.lastName = lastName;
-        contact.preferredName = preferredName;
-        contact.email = email;
-        contact.phoneNumber = phoneNumber;
-        contact.city = city;
-        contact.state = state;
-        contact.zip = zip;
-        contact.lat = lat;
-        contact.lng = lng;
-        contact.favoriteHobby = favoriteHobby;
-      }
-      return contact;
-    });
-
-    this.setState({ contacts });
+  async onEditSubmit() {
+    const contacts = this.pullContacts();
+    await this.pullContacts(); 
   }
-
+  
   // Sorts the data by the column that is clicked on by the user (calls the checkNull() function to avoid any errors)
   onSort(event, sortKey) {
     const contacts = this.getContacts();
@@ -202,12 +223,15 @@ class App extends Component {
   render(){
       return(
         <div className="App">
+        <div className="dim-bg"></div>
+        <div className="loading"></div>
           <h1>Mustang React Contact Manager</h1>
             <div className="container">
               <AddContact
                 onAdd = {this.onAdd}
               />
               <div className="search">
+              <div className="data-button"onClick = {this.initialLoad}><button>Load Original Data</button></div>
               <h2>Search Contacts</h2>
                 <form>
                 <input placeholder="Search for..." ref={input => this.search = input} onChange={this.handleInputChange} />
@@ -243,7 +267,7 @@ class App extends Component {
                   this.state.contacts.map(contact => {
                     return (
                       <ContactPerson
-                        key = {contact.firstName + contact.lastName}
+                        key = {contact.firstName + contact.id}
                         // ES6 Spread Operator
                         {...contact}
 

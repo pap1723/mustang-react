@@ -17,10 +17,15 @@ class ContactPerson extends Component {
     this.onBlur = this.onBlur.bind(this);
   }
 
-  // When the delete button is pressed, pass the name of the contact being deleted to the main function
+  /* When the delete button is pressed, pass the name of the contact being deleted to the main function
+     but will have a confirmation show up before executing the deletion.
+  */
   onDelete() {
-    const { onDelete, firstName, lastName } = this.props;
-    onDelete(firstName, lastName);
+    const { onDelete, firstName, lastName, id } = this.props;
+    if (window.confirm("Are you sure you want to delete this contact?")) {
+      onDelete(firstName, lastName, id);
+    } else { }
+    
   }
 
   // When the user clicks the edit button, change the state that sets the format and allows for editing the data
@@ -28,11 +33,34 @@ class ContactPerson extends Component {
     this.setState({ isEdit: true });
   }
 
-  // When the user's edits are submitted, pass the information to the main app to save the edit and set the state back to regular
+  // When the user's edits are submitted, pass the information to the database to save the edits.
   onEditSubmit(event) {
     event.preventDefault();
 
-    this.props.onEditSubmit(this.firstNameInput.value, this.lastNameInput.value, this.preferredNameInput.value, this.emailInput.value, this.phoneNumberInput.value, this.cityInput.value, this.stateInput.value, this.zipInput.value, this.latInput.value, this.lngInput.value, this.favoriteHobbyInput.value, this.props.firstName + this.props.lastName);
+    this.props.onEditSubmit();
+    fetch('https://dan-nodejs.azurewebsites.net/edit', {
+      method: "post",
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        firstName: this.firstNameInput.value,
+        lastName: this.lastNameInput.value,
+        preferredName: this.preferredNameInput.value,
+        email: this.emailInput.value,
+        phoneNumber: this.phoneNumberInput.value,
+        city: this.cityInput.value,
+        state: this.stateInput.value,
+        zip: this.zipInput.value,
+        lat: this.latInput.value,
+        lng: this.lngInput.value,
+        favoriteHobby: this.favoriteHobbyInput.value,
+        id: this.props.id
+      })
+    })
+    .then((res) => res.text())
+    .then((res) => console.log(res));
   
     this.setState ({ isEdit: false });
   }
@@ -118,8 +146,7 @@ class ContactPerson extends Component {
           <div className="td" id="firstName">{firstName}</div>
           <div className="td">{lastName}</div>
           <div className="td">{preferredName}</div>
-          <div className="td">{email}</div>
-          
+          <div className="td">{email}</div> 
           <div className="td">{phoneNumber}</div>
           <div className="td">{city}</div>
           <div className="td">{state}</div>

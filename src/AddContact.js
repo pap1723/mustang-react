@@ -10,12 +10,11 @@ class AddContact extends Component {
     this.onBlur = this.onBlur.bind(this);
   }
 
-  // Function that adds the new contact to storage. Passes the data to the main function to process and clears the inputs
+  // Function that adds the new contact to the database for storage.
   onSubmit(event) {
     event.preventDefault();
 
-    this.props.onAdd(this.firstNameInput.value, this.lastNameInput.value, this.preferredNameInput.value, this.emailInput.value, this.phoneNumberInput.value, this.cityInput.value, this.stateInput.value, this.zipInput.value, this.latInput.value, this.lngInput.value, this.favoriteHobbyInput.value, this.props.firstName + this.props.lastName);
-    
+    this.props.onAdd();
     fetch('https://dan-nodejs.azurewebsites.net', {
       method: "post",
       headers: {
@@ -36,7 +35,8 @@ class AddContact extends Component {
         favoriteHobby: this.favoriteHobbyInput.value
       })
     })
-    .then((res) => console.log(res))
+    .then((res) => res.text())
+    .then((res) => console.log(res));
 
     this.firstNameInput.value = '';
     this.lastNameInput.value = '';
